@@ -6,18 +6,21 @@ import time
 
 import requests
 
+import canva_auth
+
 CANVA_API = "https://api.canva.com/rest/v1"
 
 
-def _headers():
-    return {"Authorization": f"Bearer {os.environ['CANVA_ACCESS_TOKEN']}"}
+def _headers(access_token: str):
+    return {"Authorization": f"Bearer {access_token}"}
 
 
-def autofill(headline: str, subheadline: str) -> str:
+def autofill(access_token: str, headline: str, subheadline: str) -> str:
     resp = requests.post(
         f"{CANVA_API}/autofills",
-        headers=_headers(),
+        headers=_headers(access_token),
         json={
+            "type": "create_from_brand_template",
             "brand_template_id": os.environ["CANVA_BRAND_TEMPLATE_ID"],
             "title": f"nu.a daily post - {headline[:30]}",
             "data": {
@@ -32,7 +35,7 @@ def autofill(headline: str, subheadline: str) -> str:
 
     for _ in range(30):
         time.sleep(2)
-        poll = requests.get(f"{CANVA_API}/autofills/{job_id}", headers=_headers(), timeout=30)
+        poll = requests.get(f"{CANVA_API}/autofills/{job_id}", headers=_headers(access_token), timeout=30)
         poll.raise_for_status()
         job = poll.json()["job"]
         if job["status"] == "success":
@@ -43,10 +46,10 @@ def autofill(headline: str, subheadline: str) -> str:
     raise TimeoutError("Canva autofill job did not finish in time")
 
 
-def export_png(design_id: str) -> str:
+def export_png(access_token: str, design_id: str) -> str:
     resp = requests.post(
         f"{CANVA_API}/exports",
-        headers=_headers(),
+        headers=_headers(access_token),
         json={"design_id": design_id, "format": {"type": "png"}},
         timeout=30,
     )
@@ -55,7 +58,7 @@ def export_png(design_id: str) -> str:
 
     for _ in range(30):
         time.sleep(2)
-        poll = requests.get(f"{CANVA_API}/exports/{export_id}", headers=_headers(), timeout=30)
+        poll = requests.get(f"{CANVA_API}/exports/{export_id}", headers=_headers(access_token), timeout=30)
         poll.raise_for_status()
         job = poll.json()["job"]
         if job["status"] == "success":
@@ -67,8 +70,9 @@ def export_png(design_id: str) -> str:
 
 
 def generate(headline: str, subheadline: str) -> str:
-    design_id = autofill(headline, subheadline)
-    canva_url = export_png(design_id)
+    access_token = canva_auth.refresh()
+    design_id = autofill(access_token, headline, subheadline)
+    canva_url = export_png(access_token, design_id)
 
     # Canva's export URL expires after ~24h, so download the bytes now.
     image_bytes = requests.get(canva_url, timeout=60).content

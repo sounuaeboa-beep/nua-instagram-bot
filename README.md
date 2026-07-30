@@ -26,13 +26,21 @@ Repo → Settings → Secrets and variables → Actions → add:
 | Secret | Where to get it |
 |---|---|
 | `ANTHROPIC_API_KEY` | console.anthropic.com |
-| `CANVA_ACCESS_TOKEN` | Canva Developer Portal, after completing the OAuth flow for your Connect API app |
+| `CANVA_CLIENT_ID` / `CANVA_CLIENT_SECRET` | Canva Developer Portal → your Connect API integration |
+| `CANVA_REFRESH_TOKEN` | One-time OAuth flow (see below) — **rotates on every run**, the pipeline updates this secret itself |
 | `CANVA_BRAND_TEMPLATE_ID` | The brand template ID from the nu.a daily-post design in Canva |
 | `SHOPIFY_STORE_DOMAIN` | e.g. `your-store.myshopify.com` |
 | `SHOPIFY_ADMIN_ACCESS_TOKEN` | Shopify Admin → Settings → Apps → Develop apps → create an app with `write_files` scope |
 | `IG_ACCESS_TOKEN` | Long-lived token from the Instagram Login OAuth flow (see below) |
 | `IG_USER_ID` | From `GET https://graph.instagram.com/me?fields=id,username` |
-| `REPO_ADMIN_TOKEN` | A GitHub Personal Access Token (fine-grained, `secrets:write` on this repo) — only needed for the token-refresh workflow to update `IG_ACCESS_TOKEN` automatically |
+| `REPO_ADMIN_TOKEN` | A GitHub Personal Access Token (fine-grained, `secrets:write` on this repo) — needed for **both** the Instagram token-refresh workflow and every daily run (to persist Canva's rotated refresh token) |
+
+**Important:** Canva access tokens expire every 4 hours, and refresh tokens rotate on
+every use — the old one is invalidated the instant a new one is issued. `canva_auth.py`
+handles this automatically each run, but if a run ever fails *after* the Canva refresh
+step but *before* `REPO_ADMIN_TOKEN` successfully updates the secret, the next run will
+fail too (the stored refresh token would be stale). Check the Actions log if that happens
+— you'd need to redo the Canva OAuth flow once to get a fresh refresh token.
 
 ### 2. Canva brand template
 
