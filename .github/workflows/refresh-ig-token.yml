@@ -1,0 +1,30 @@
+name: Refresh Instagram Token
+
+on:
+  schedule:
+    # Runs every 20 days — long-lived tokens last 60 days and are
+    # refreshable after 24h, so this keeps well within the window.
+    - cron: "0 12 */20 * *"
+  workflow_dispatch: {}
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refresh long-lived token
+        id: refresh
+        run: |
+          RESPONSE=$(curl -s -G "https://graph.instagram.com/refresh_access_token" \
+            --data-urlencode "grant_type=ig_refresh_token" \
+            --data-urlencode "access_token=${{ secrets.IG_ACCESS_TOKEN }}")
+          echo "$RESPONSE"
+          NEW_TOKEN=$(echo "$RESPONSE" | python3 -c "import sys,json; print(json.load(sys.stdin)['access_token'])")
+          echo "::add-mask::$NEW_TOKEN"
+          echo "new_token=$NEW_TOKEN" >> "$GITHUB_OUTPUT"
+
+      - name: Update repo secret
+        env:
+          GH_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
+        run: |
+          gh secret set IG_ACCESS_TOKEN --body "${{ steps.refresh.outputs.new_token }}" \
+            --repo ${{ github.repository }}

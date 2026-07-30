@@ -1,0 +1,4 @@
+.env
+__pycache__/
+*.pyc
+tmp_post_image.png
