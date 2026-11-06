@@ -1,99 +1,63 @@
-"""Orchestrates the full daily pipeline: copy → guardrail → art → Cloudinary → publish → log."""
+"""Daily pipeline: pick pillar+product -> caption (+ independent review) -> image -> host -> publish -> log.
 
+  python scripts/run_daily.py             # live: publishes to Instagram
+  python scripts/run_daily.py --dry-run   # builds caption + image and checks the IG token; publishes nothing
+"""
+import argparse
 import json
-import os
-import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-import generate_copy
+import catalog
+import content
 import generate_art
-from upload_to_cloudinary import upload as upload_image
 import publish
 
-DATA_DIR = Path(__file__).resolve().parent.parent / "data"
-ROTATION_PATH = DATA_DIR / "product_rotation.json"
-HISTORY_PATH = DATA_DIR / "history.json"
-
-
-def run_guardrail(post: dict):
-    result = subprocess.run(
-        [sys.executable, "guardrail_check.py"],
-        input=json.dumps(post),
-        capture_output=True,
-        text=True,
-        cwd=Path(__file__).resolve().parent,
-    )
-    if result.stderr:
-        print(result.stderr, file=sys.stderr)
-    if result.returncode != 0:
-        raise RuntimeError("Guardrail rejected the caption — aborting run without publishing")
+HISTORY_PATH = Path(__file__).resolve().parent.parent / "data" / "history.json"
 
 
 def main():
-    # 1. Load rotation state
-    with open(ROTATION_PATH) as f:
-        rotation = json.load(f)
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--pillar", choices=sorted(content.PILLARS))
+    parser.add_argument("--product", choices=content.PRODUCTS)
+    args = parser.parse_args()
 
-    # 2. Pick product + generate copy
-    product, objetivo = generate_copy.pick_today(rotation)
-    post = generate_copy.generate_caption(product, objetivo)
-    post["product"] = product
-    post["objetivo"] = objetivo
+    history = json.loads(HISTORY_PATH.read_text(encoding="utf-8"))
+    pillar, product = content.pick_today(history)
+    pillar, product = args.pillar or pillar, args.product or product
+    print(f"[plan] pillar={pillar} product={product}")
 
-    # 3. Update rotation
-    rotation["last_product"] = product
-    rotation["last_objetivo"] = objetivo
-    with open(ROTATION_PATH, "w") as f:
-        json.dump(rotation, f, ensure_ascii=False, indent=2)
+    facts = catalog.facts_for(product, catalog.get_catalog())
+    post = content.create_post(pillar, product, facts, [h.get("hook", "") for h in history[-7:]])
+    caption = post["caption"] + "\n\n" + " ".join(post["hashtags"])
 
-    # 4. Safety check
-    run_guardrail(post)
-
-    # 5. Generate artwork (Pillow)
-    local_path = generate_art.generate(
-        product=product,
-        headline=post["image_headline"],
-        subheadline=post.get("image_subheadline", ""),
+    image_path = generate_art.generate(
+        product=product, headline=post["image_headline"], subheadline=post.get("image_subheadline", ""),
     )
 
-    # 6. Upload to Cloudinary → get public URL
-    image_url = upload_image(local_path)
+    if args.dry_run:
+        account = publish.check_token()
+        print(f"[dry-run] Instagram token OK (@{account.get('username')})")
+        print(f"[dry-run] image: {image_path}\n[dry-run] caption:\n{caption}")
+        return
 
-    # Optional: remove local file after upload
-    try:
-        os.remove(local_path)
-    except OSError:
-        pass
+    image_url = publish.upload_image(image_path)
+    media_id = publish.publish_image(image_url, caption)
 
-    # 7. Publish to Instagram
-    full_caption = post["caption"] + "\n\n" + " ".join(post["hashtags"])
-    creation_id = publish.create_container(image_url, full_caption)
-    publish.wait_until_ready(creation_id)
-    media_id = publish.publish(creation_id)
-
-    # 8. Log to history
-    with open(HISTORY_PATH) as f:
-        history = json.load(f)
-
+    # Log before anything else can fail, so a published post is never lost from history.
     history.append({
-        "date": datetime.now(timezone.utc).isoformat(),
-        "product": product,
-        "objetivo": objetivo,
-        "caption": post["caption"],
-        "hashtags": post["hashtags"],
-        "image_headline": post["image_headline"],
-        "image_subheadline": post.get("image_subheadline", ""),
-        "media_id": media_id,
-        "image_url": image_url,
+        "date": datetime.now(timezone.utc).isoformat(), "pillar": pillar, "product": product,
+        "hook": post["hook"], "caption": post["caption"], "hashtags": post["hashtags"],
+        "image_headline": post["image_headline"], "image_subheadline": post.get("image_subheadline", ""),
+        "media_id": media_id, "image_url": image_url,
     })
+    HISTORY_PATH.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Published media {media_id} ({pillar} / {product})\n{image_url}")
 
-    with open(HISTORY_PATH, "w") as f:
-        json.dump(history, f, ensure_ascii=False, indent=2)
-
-    print(f"✅ Published media {media_id} ({product} / {objetivo})")
-    print(f"   Image: {image_url}")
+    if not publish.refresh_token():
+        sys.exit("Post published, but the Instagram token could not be refreshed/saved. Fix before it expires.")
 
 
 if __name__ == "__main__":
