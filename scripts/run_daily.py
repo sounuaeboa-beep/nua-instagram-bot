@@ -14,7 +14,20 @@ import content
 import generate_art
 import publish
 
-HISTORY_PATH = Path(__file__).resolve().parent.parent / "data" / "history.json"
+DATA_DIR = Path(__file__).resolve().parent.parent / "data"
+HISTORY_PATH = DATA_DIR / "history.json"
+TOKEN_STATE_PATH = DATA_DIR / "token_state.json"   # when the Instagram token was last renewed
+TOKEN_REFRESH_EVERY_DAYS = 7                       # Instagram allows renewal only after 24h; the token lasts 60 days
+
+
+def _token_refresh_due() -> bool:
+    try:
+        last = datetime.fromisoformat(json.loads(TOKEN_STATE_PATH.read_text())["refreshed_at"])
+    except (FileNotFoundError, KeyError, ValueError):
+        return True
+    age = datetime.now(timezone.utc) - last
+    print(f"[token] last renewed {age.days}d ago")
+    return age.days >= TOKEN_REFRESH_EVERY_DAYS
 
 
 def main():
@@ -56,8 +69,10 @@ def main():
     HISTORY_PATH.write_text(json.dumps(history, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"Published media {media_id} ({pillar} / {product})\n{image_url}")
 
-    if not publish.refresh_token():
-        sys.exit("Post published, but the Instagram token could not be refreshed/saved. Fix before it expires.")
+    if _token_refresh_due():
+        if not publish.refresh_token():
+            sys.exit("Post published, but the Instagram token could not be refreshed/saved. Fix before it expires.")
+        TOKEN_STATE_PATH.write_text(json.dumps({"refreshed_at": datetime.now(timezone.utc).isoformat()}), encoding="utf-8")
 
 
 if __name__ == "__main__":
