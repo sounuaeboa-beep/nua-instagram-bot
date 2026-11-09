@@ -19,21 +19,29 @@ def _json(resp: requests.Response) -> dict:
     return resp.json()
 
 
-def upload_image(image_path: str | Path) -> str:
-    """Instagram only fetches public URLs, so host the PNG and return its https URL."""
+def _cloudinary_upload(path: str | Path, resource_type: str) -> str:
     cloudinary.config(
         cloud_name=os.environ["CLOUDINARY_CLOUD_NAME"],
         api_key=os.environ["CLOUDINARY_API_KEY"],
         api_secret=os.environ["CLOUDINARY_API_SECRET"],
         secure=True,
     )
-    # URL-safe and unique per upload, so a re-used photo can never serve a stale cached image
-    safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", Path(image_path).stem).strip("-")
+    # URL-safe and unique per upload, so a re-used photo can never serve a stale cached file
+    safe_name = re.sub(r"[^A-Za-z0-9_-]+", "-", Path(path).stem).strip("-")
     result = cloudinary.uploader.upload(
-        str(image_path), folder="nu-a-instagram",
-        public_id=f"{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-{safe_name}", resource_type="image",
+        str(path), folder="nu-a-instagram", resource_type=resource_type,
+        public_id=f"{time.strftime('%Y%m%d-%H%M%S', time.gmtime())}-{safe_name}",
     )
     return result["secure_url"]
+
+
+def upload_image(image_path: str | Path) -> str:
+    """Instagram only fetches public URLs, so host the PNG and return its https URL."""
+    return _cloudinary_upload(image_path, "image")
+
+
+def upload_video(video_path: str | Path) -> str:
+    return _cloudinary_upload(video_path, "video")
 
 
 def check_token() -> dict:
@@ -44,15 +52,15 @@ def check_token() -> dict:
     ))
 
 
-def publish_image(image_url: str, caption: str) -> str:
+def _publish(media_params: dict, tries: int, delay: int) -> str:
+    """Two-step Instagram publishing: create a container, wait until it is processed, then publish it."""
     user_id, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
 
     container = _json(requests.post(
-        f"{GRAPH}/{user_id}/media",
-        data={"image_url": image_url, "caption": caption, "access_token": token}, timeout=30,
+        f"{GRAPH}/{user_id}/media", data={**media_params, "access_token": token}, timeout=60,
     ))["id"]
 
-    for _ in range(15):
+    for _ in range(tries):
         status = _json(requests.get(
             f"{GRAPH}/{container}", params={"fields": "status_code", "access_token": token}, timeout=30,
         ))["status_code"]
@@ -60,14 +68,24 @@ def publish_image(image_url: str, caption: str) -> str:
             break
         if status == "ERROR":
             raise RuntimeError("Instagram failed to process the media container")
-        time.sleep(2)
+        time.sleep(delay)
     else:
         raise TimeoutError("Media container not ready in time")
 
     return _json(requests.post(
-        f"{GRAPH}/{user_id}/media_publish",
-        data={"creation_id": container, "access_token": token}, timeout=30,
+        f"{GRAPH}/{user_id}/media_publish", data={"creation_id": container, "access_token": token}, timeout=60,
     ))["id"]
+
+
+def publish_image(image_url: str, caption: str) -> str:
+    return _publish({"image_url": image_url, "caption": caption}, tries=15, delay=2)
+
+
+def publish_reel(video_url: str, caption: str) -> str:
+    """Reels take longer to process: wait up to 5 minutes."""
+    return _publish(
+        {"media_type": "REELS", "video_url": video_url, "caption": caption, "share_to_feed": "true"}, tries=60, delay=5,
+    )
 
 
 def refresh_token() -> bool:

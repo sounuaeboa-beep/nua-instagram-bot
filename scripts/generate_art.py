@@ -33,7 +33,7 @@ def _photos(folder: Path) -> list[Path]:
     return found
 
 
-def _pick_photo(product: str, pillar: str | None = None) -> Path:
+def _pool(product: str, pillar: str | None) -> list[Path]:
     """Product close-ups by default. Lifestyle (people) shots on 'aspiracional' days and half of 'conforto' days."""
     product_photos = _photos(MEDIA_DIR / product.lower().strip())
     lifestyle_photos = _photos(MEDIA_DIR / "lifestyle")
@@ -41,7 +41,17 @@ def _pick_photo(product: str, pillar: str | None = None) -> Path:
     pool = (lifestyle_photos if use_lifestyle else product_photos) or product_photos or lifestyle_photos
     if not pool:
         raise FileNotFoundError(f"No usable photos for '{product}' in media/")
-    return random.choice(pool)
+    return pool
+
+
+def _pick_photo(product: str, pillar: str | None = None) -> Path:
+    return random.choice(_pool(product, pillar))
+
+
+def pick_photos(product: str, pillar: str | None, count: int) -> list[Path]:
+    """Several different photos from the same pool (used by Reels)."""
+    pool = _pool(product, pillar)
+    return random.sample(pool, min(count, len(pool)))
 
 
 def _cover_crop(img: Image.Image, width: int, height: int) -> Image.Image:

@@ -8,6 +8,7 @@ GitHub Actions (10:00 BRT)
   -> content.py      pick pillar (40/25/25/10 mix) + product, Claude writes the caption using data/playbook.md,
                      a second Claude call reviews it against the facts and brand rules
   -> generate_art.py Pillow: photo from media/ + headline text strip (4:5)
+  -> make_reel.py    every 4th post is a 9.5 s vertical Reel from 3 library photos (bundled ffmpeg); falls back to an image if anything fails
   -> publish.py      host on Cloudinary (free), publish via Instagram API, refresh the 60-day token
   -> data/history.json  one entry per post; also drives the rotation
 ```
@@ -17,6 +18,7 @@ GitHub Actions (10:00 BRT)
 ```bash
 pip install -r requirements.txt
 python scripts/run_daily.py --dry-run      # caption + image + token check, publishes nothing
+python scripts/run_daily.py --dry-run --format reel   # same, but builds the Reel (also an option in the workflow form)
 python scripts/run_daily.py                # live
 ```
 In GitHub: Actions > "Daily Instagram Post" > Run workflow (dry run is the default for manual runs; the image is

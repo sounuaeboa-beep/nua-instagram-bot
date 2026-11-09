@@ -10,6 +10,11 @@ on:
         description: "Dry run (no publish)"
         type: boolean
         default: true
+      format:
+        description: "Format (auto = every 4th post is a Reel)"
+        type: choice
+        options: [auto, image, reel]
+        default: auto
 
 concurrency:
   group: daily-post
@@ -39,14 +44,16 @@ jobs:
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
           REPO_ADMIN_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
-        run: python scripts/run_daily.py ${{ inputs.dry_run && '--dry-run' || '' }}
+        run: python scripts/run_daily.py ${{ inputs.dry_run && '--dry-run' || '' }} --format ${{ inputs.format || 'auto' }}
 
       - name: Keep the dry-run image for review
         if: always() && inputs.dry_run
         uses: actions/upload-artifact@v4
         with:
           name: dry-run-image
-          path: output/*.png
+          path: |
+            output/*.png
+            output/*.mp4
           if-no-files-found: ignore
 
       - name: Commit post history
