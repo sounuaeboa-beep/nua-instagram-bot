@@ -34,7 +34,7 @@ def main():
     caption = post["caption"] + "\n\n" + " ".join(post["hashtags"])
 
     image_path = generate_art.generate(
-        product=product, headline=post["image_headline"], subheadline=post.get("image_subheadline", ""),
+        product=product, headline=post["image_headline"], subheadline=post.get("image_subheadline", ""), pillar=pillar,
     )
 
     if args.dry_run:

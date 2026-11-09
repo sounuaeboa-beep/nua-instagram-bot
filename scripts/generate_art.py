@@ -1,7 +1,7 @@
-"""Builds the daily post image: a product photo from media/<product>/ on top, with the headline in a clean
+"""Builds the daily post image: a photo from media/<product>/ (or media/lifestyle/) on top, with the headline in a clean
 text strip underneath (4:5 portrait, 1080x1350). The text never covers the photo, so the product stays visible.
 
-    generate(product, headline, subheadline="") -> Path
+    generate(product, headline, subheadline="", pillar=None) -> Path
 CLI:  python scripts/generate_art.py <product> <headline> [subheadline]
 """
 import random
@@ -22,12 +22,26 @@ MARGIN_X = 70
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
-def _pick_photo(product: str) -> Path:
-    folder = MEDIA_DIR / product.lower().strip()
-    photos = [p for p in folder.glob("*") if p.suffix.lower() in IMAGE_EXTENSIONS] if folder.exists() else []
-    if not photos:
-        raise FileNotFoundError(f"No photos in {folder}")
-    return random.choice(photos)
+def _photos(folder: Path) -> list[Path]:
+    """Photos in a folder, skipping wide landscape ones: a square crop would cut people off at the sides."""
+    found = []
+    for p in sorted(folder.glob("*")) if folder.exists() else []:
+        if p.suffix.lower() in IMAGE_EXTENSIONS:
+            with Image.open(p) as im:
+                if im.width / im.height <= 1.1:
+                    found.append(p)
+    return found
+
+
+def _pick_photo(product: str, pillar: str | None = None) -> Path:
+    """Product close-ups by default. Lifestyle (people) shots on 'aspiracional' days and half of 'conforto' days."""
+    product_photos = _photos(MEDIA_DIR / product.lower().strip())
+    lifestyle_photos = _photos(MEDIA_DIR / "lifestyle")
+    use_lifestyle = pillar == "aspiracional" or (pillar == "conforto" and random.random() < 0.5)
+    pool = (lifestyle_photos if use_lifestyle else product_photos) or product_photos or lifestyle_photos
+    if not pool:
+        raise FileNotFoundError(f"No usable photos for '{product}' in media/")
+    return random.choice(pool)
 
 
 def _cover_crop(img: Image.Image, width: int, height: int) -> Image.Image:
@@ -59,11 +73,11 @@ def _fit(text: str, font_path: Path, start_size: int, min_size: int, max_lines: 
     return font, lines
 
 
-def generate(product: str, headline: str, subheadline: str = "") -> Path:
+def generate(product: str, headline: str, subheadline: str = "", pillar: str | None = None) -> Path:
     if not headline.strip():
         raise ValueError("headline is required")
 
-    photo_path = _pick_photo(product)
+    photo_path = _pick_photo(product, pillar)
     print(f"[art] using photo: {photo_path.name}")
 
     photo = _cover_crop(Image.open(photo_path).convert("RGB"), WIDTH, PHOTO_H)
