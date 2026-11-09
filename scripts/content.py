@@ -93,8 +93,14 @@ def _ask(system: str, user: str, max_tokens: int) -> dict:
     message = Anthropic().messages.create(  # reads ANTHROPIC_API_KEY
         model=MODEL, max_tokens=max_tokens, system=system,
         messages=[{"role": "user", "content": user}],
+        # Sonnet 5.5 thinks by default and thinking tokens count toward max_tokens: keep it light
+        extra_body={"output_config": {"effort": "low"}},
     )
-    return _parse_json(message.content[0].text)
+    # The reply can start with a "thinking" block: read only the text blocks
+    text = "".join(block.text for block in message.content if block.type == "text")
+    if not text:
+        raise RuntimeError(f"Model returned no text (stop_reason={message.stop_reason}); raise max_tokens?")
+    return _parse_json(text)
 
 
 def _system_prompt() -> str:
@@ -111,9 +117,9 @@ def create_post(pillar: str, product: str, facts: str, recent_hooks: list[str]) 
             f"Ganchos recentes (não repita): {recent_hooks or 'nenhum'}\n{feedback}\n"
             "Gere UMA publicação de feed pronta para postar hoje."
         )
-        post = _ask(_system_prompt(), user, max_tokens=1500)
+        post = _ask(_system_prompt(), user, max_tokens=6000)
 
-        verdict = _ask(REVIEW_PROMPT, f"FATOS:\n{facts}\n\nLEGENDA:\n{post['caption']}", max_tokens=300)
+        verdict = _ask(REVIEW_PROMPT, f"FATOS:\n{facts}\n\nLEGENDA:\n{post['caption']}", max_tokens=2000)
         if verdict["approved"]:
             return post
         feedback = f"A versão anterior foi REJEITADA pelo revisor: {verdict['reason']} Corrija isso."
