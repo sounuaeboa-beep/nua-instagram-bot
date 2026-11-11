@@ -60,11 +60,13 @@ def get_catalog() -> dict[str, dict]:
             if size == 1 and color:
                 entry["colors"].add(color)
 
+        images = [{"id": str(img["id"]), "src": img["src"]} for img in product.get("images", [])]
         if size == 1:
-            entry["single"] = {"price": min(prices), "url": url, "description": _clean(product["body_html"])}
+            entry["single"] = {"price": min(prices), "url": url, "description": _clean(product["body_html"]),
+                               "images": images}
         else:
             entry["kits"].append({"qty": size, "price": min(prices),
-                                  "per_piece": round(min(prices) / size, 2), "url": url})
+                                  "per_piece": round(min(prices) / size, 2), "url": url, "images": images})
 
     for entry in catalog.values():
         entry["colors"] = sorted(entry["colors"])

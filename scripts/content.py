@@ -2,12 +2,15 @@
 brand/legal review of it (Claude call #2). Replaces brand_voice.py,
 generate_copy.py and guardrail_check.py."""
 import json
+import re
+import unicodedata
 from pathlib import Path
 
 from anthropic import Anthropic
 
 MODEL = "claude-sonnet-5-5"
 PLAYBOOK_PATH = Path(__file__).resolve().parent.parent / "data" / "playbook.md"
+LEARNINGS_PATH = Path(__file__).resolve().parent.parent / "data" / "learnings.md"
 
 PRODUCTS = ["essencial", "invisible", "sculpt"]
 
@@ -105,23 +108,63 @@ def _ask(system: str, user: str, max_tokens: int) -> dict:
 
 def _system_prompt() -> str:
     playbook = PLAYBOOK_PATH.read_text(encoding="utf-8") if PLAYBOOK_PATH.exists() else ""
-    return f"{SYSTEM_PROMPT}\n\nPLAYBOOK:\n{playbook}" if playbook else SYSTEM_PROMPT
+    learnings = LEARNINGS_PATH.read_text(encoding="utf-8").strip() if LEARNINGS_PATH.exists() else ""
+    prompt = f"{SYSTEM_PROMPT}\n\nPLAYBOOK:\n{playbook}" if playbook else SYSTEM_PROMPT
+    return f"{prompt}\n\nAPRENDIZADOS DOS NOSSOS POSTS:\n{learnings}" if learnings else prompt
 
 
-def create_post(pillar: str, product: str, facts: str, recent_hooks: list[str]) -> dict:
-    """Generate, then have a second call review it; one retry with the reviewer's feedback."""
-    feedback = ""
-    for _ in range(2):
+FORMAT_BRIEFS = {
+    "image": "Publicação de feed (imagem única).",
+    "reel": "REEL: vídeo curto de ~10 s sem fala. O image_headline é o texto que aparece no vídeo: gancho forte e curto.",
+    "carousel": (
+        "CARROSSEL: além dos campos acima, devolva \"slides\": lista de 2 ou 3 itens "
+        '{"title": "máx. 6 palavras", "body": "máx. 22 palavras"}. Cada slide ensina ou mostra UMA ideia, usando '
+        "SOMENTE os FATOS. O image_headline é a capa; a legenda convida a deslizar."
+    ),
+}
+
+
+def _norm(text: str) -> str:
+    text = unicodedata.normalize("NFKD", text or "").encode("ascii", "ignore").decode().lower()
+    return re.sub(r"[^a-z0-9]+", " ", text).strip()
+
+
+def _slides_ok(post: dict) -> bool:
+    slides = post.get("slides")
+    return (isinstance(slides, list) and 2 <= len(slides) <= 3
+            and all(isinstance(x, dict) and x.get("title") and x.get("body") for x in slides))
+
+
+def create_post(pillar: str, product: str, facts: str, recent_hooks: list[str],
+                recent_headlines: list[str] = (), fmt: str = "image") -> dict:
+    """Generate, then have a second call review it. Up to 3 attempts: a reviewer rejection, a headline that repeats a
+    recent one, or a malformed carousel each send the model back with feedback. A repeated headline on the last
+    attempt is accepted rather than blocking the day's post."""
+    seen = {_norm(h) for h in recent_headlines}
+    feedback, verdict = "", {"reason": ""}
+    for attempt in range(3):
+        last = attempt == 2
         user = (
-            f"PILAR DE HOJE: {pillar} — {PILLARS[pillar]}\nLINHA: {product}\n\nFATOS:\n{facts}\n\n"
-            f"Ganchos recentes (não repita): {recent_hooks or 'nenhum'}\n{feedback}\n"
-            "Gere UMA publicação de feed pronta para postar hoje."
+            f"PILAR DE HOJE: {pillar} — {PILLARS[pillar]}\nLINHA: {product}\nFORMATO: {FORMAT_BRIEFS[fmt]}\n\n"
+            f"FATOS:\n{facts}\n\nGanchos recentes (não repita): {recent_hooks or 'nenhum'}\n"
+            f"Textos de imagem recentes (não repita nem parafraseie): {list(recent_headlines) or 'nenhum'}\n{feedback}\n"
+            "Gere UMA publicação pronta para postar hoje."
         )
         post = _ask(_system_prompt(), user, max_tokens=6000)
 
-        verdict = _ask(REVIEW_PROMPT, f"FATOS:\n{facts}\n\nLEGENDA:\n{post['caption']}", max_tokens=2000)
+        if fmt == "carousel" and not _slides_ok(post):
+            feedback = "Faltaram os slides: devolva 2 ou 3 itens com title e body."
+            if last:
+                raise RuntimeError("Model did not return valid carousel slides")
+            continue
+        if _norm(post["image_headline"]) in seen and not last:
+            feedback = f"O image_headline \"{post['image_headline']}\" repete um texto recente. Crie um novo."
+            continue
+
+        text = post["caption"] + "".join(f"\n[slide] {x['title']}: {x['body']}" for x in post.get("slides", []))
+        verdict = _ask(REVIEW_PROMPT, f"FATOS:\n{facts}\n\nLEGENDA:\n{text}", max_tokens=2000)
         if verdict["approved"]:
             return post
         feedback = f"A versão anterior foi REJEITADA pelo revisor: {verdict['reason']} Corrija isso."
 
-    raise RuntimeError(f"Reviewer rejected the caption twice: {verdict['reason']}")
+    raise RuntimeError(f"Reviewer rejected the post: {verdict['reason']}")

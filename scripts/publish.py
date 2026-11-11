@@ -52,29 +52,44 @@ def check_token() -> dict:
     ))
 
 
-def _publish(media_params: dict, tries: int, delay: int) -> str:
-    """Two-step Instagram publishing: create a container, wait until it is processed, then publish it."""
-    user_id, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
-
-    container = _json(requests.post(
-        f"{GRAPH}/{user_id}/media", data={**media_params, "access_token": token}, timeout=60,
-    ))["id"]
-
+def _wait(container: str, tries: int, delay: int) -> None:
+    token = os.environ["IG_ACCESS_TOKEN"]
     for _ in range(tries):
         status = _json(requests.get(
             f"{GRAPH}/{container}", params={"fields": "status_code", "access_token": token}, timeout=30,
         ))["status_code"]
         if status == "FINISHED":
-            break
+            return
         if status == "ERROR":
             raise RuntimeError("Instagram failed to process the media container")
         time.sleep(delay)
-    else:
-        raise TimeoutError("Media container not ready in time")
+    raise TimeoutError("Media container not ready in time")
 
+
+def _publish(media_params: dict, tries: int, delay: int) -> str:
+    """Two-step Instagram publishing: create a container, wait until it is processed, then publish it."""
+    user_id, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
+    container = _json(requests.post(
+        f"{GRAPH}/{user_id}/media", data={**media_params, "access_token": token}, timeout=60,
+    ))["id"]
+    _wait(container, tries, delay)
     return _json(requests.post(
         f"{GRAPH}/{user_id}/media_publish", data={"creation_id": container, "access_token": token}, timeout=60,
     ))["id"]
+
+
+def publish_carousel(image_urls: list[str], caption: str) -> str:
+    """One container per slide, then a carousel container that holds them."""
+    user_id, token = os.environ["IG_USER_ID"], os.environ["IG_ACCESS_TOKEN"]
+    children = []
+    for url in image_urls:
+        child = _json(requests.post(
+            f"{GRAPH}/{user_id}/media",
+            data={"image_url": url, "is_carousel_item": "true", "access_token": token}, timeout=60,
+        ))["id"]
+        _wait(child, tries=15, delay=2)
+        children.append(child)
+    return _publish({"media_type": "CAROUSEL", "children": ",".join(children), "caption": caption}, tries=30, delay=3)
 
 
 def publish_image(image_url: str, caption: str) -> str:
