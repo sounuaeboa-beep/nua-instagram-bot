@@ -16,6 +16,18 @@ GitHub Actions (09:45 and 17:45 BRT, best effort: GitHub can start scheduled run
   -> publish.py      host on Cloudinary (free), publish image / Reel / carousel via the Instagram API, renew the token
   -> data/history.json  one entry per post (format, photos used); also drives rotation and the no-repeat memory
 ```
+
+Stories (same workflow, runs right after the feed post; a failure here never affects the post):
+```
+  -> run_stories.py  one set of 2-3 frames per run, rotating: novo (the new feed post), mito ou verdade, escolha 1 ou 2,
+                     dica, kit (kit photo + real price card). 50% of sets promote the feed post.
+  -> story_content.py  Claude writes the on-image text, a second call reviews it (facts only, no emojis/URLs)
+  -> story_art.py    1080x1920 frames, text kept inside Instagram's safe zone (y 270-1580)
+  -> data/stories_history.json  sets, photos and texts used (drives rotation and no-repeat memory)
+```
+The Instagram API cannot add stickers (poll, question, link), so engagement is asked for in the text (reply 1 or 2)
+and the call to action is "link na bio".
+
 Any Reel or carousel problem falls back to a normal image post, so the day's post is never lost.
 
 ## Run it
@@ -24,6 +36,7 @@ Any Reel or carousel problem falls back to a normal image post, so the day's pos
 pip install -r requirements.txt
 python scripts/run_daily.py --dry-run      # caption + image + token check, publishes nothing
 python scripts/run_daily.py --dry-run --format carousel   # same, forcing a format: image | reel | carousel (also a choice in the workflow form)
+python scripts/run_stories.py --dry-run   # Stories set; --set novo|mito|escolha|dica|kit forces one
 python scripts/run_daily.py                # live
 ```
 In GitHub: Actions > "Daily Instagram Post" > Run workflow (dry run is the default for manual runs; the image is

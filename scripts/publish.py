@@ -12,6 +12,12 @@ import requests
 
 GRAPH = "https://graph.instagram.com/v26.0"
 
+# A token renewed earlier in the same GitHub job is parked here, so steps that start later use the fresh one
+# (secrets are read when the job starts). The file only ever exists inside a running job.
+TOKEN_FILE = Path(__file__).resolve().parent.parent / "output" / ".ig_token"
+if TOKEN_FILE.exists():
+    os.environ["IG_ACCESS_TOKEN"] = TOKEN_FILE.read_text().strip()
+
 
 def _json(resp: requests.Response) -> dict:
     if not resp.ok:
@@ -96,6 +102,11 @@ def publish_image(image_url: str, caption: str) -> str:
     return _publish({"image_url": image_url, "caption": caption}, tries=15, delay=2)
 
 
+def publish_story(image_url: str) -> str:
+    """A Story frame (image). The API cannot add stickers (poll, question, link), so text lives on the image."""
+    return _publish({"media_type": "STORIES", "image_url": image_url}, tries=15, delay=2)
+
+
 def publish_reel(video_url: str, caption: str) -> str:
     """Reels take longer to process: wait up to 5 minutes."""
     return _publish(
@@ -111,6 +122,8 @@ def refresh_token() -> bool:
         params={"grant_type": "ig_refresh_token", "access_token": os.environ["IG_ACCESS_TOKEN"]}, timeout=30,
     ))
 
+    TOKEN_FILE.parent.mkdir(exist_ok=True)
+    TOKEN_FILE.write_text(data["access_token"])
     repo, pat = os.environ.get("GITHUB_REPOSITORY"), os.environ.get("REPO_ADMIN_TOKEN")
     if not (repo and pat):
         print("[token] refreshed, but REPO_ADMIN_TOKEN/GITHUB_REPOSITORY missing: new token NOT saved")

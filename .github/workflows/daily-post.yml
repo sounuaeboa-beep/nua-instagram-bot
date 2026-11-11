@@ -15,6 +15,10 @@ on:
         type: choice
         options: [auto, image, reel, carousel]
         default: auto
+      stories:
+        description: "Also build/publish the Stories set"
+        type: boolean
+        default: true
 
 concurrency:
   group: daily-post
@@ -46,6 +50,19 @@ jobs:
           REPO_ADMIN_TOKEN: ${{ secrets.REPO_ADMIN_TOKEN }}
         run: python scripts/run_daily.py ${{ inputs.dry_run && '--dry-run' || '' }} --format ${{ inputs.format || 'auto' }}
 
+      # Stories never block or fail the day's feed post: this step is allowed to fail on its own
+      - name: Run Stories
+        if: always() && (github.event_name == 'schedule' || inputs.stories)
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: python scripts/run_stories.py ${{ inputs.dry_run && '--dry-run' || '' }}
+
       - name: Keep the dry-run image for review
         if: always() && inputs.dry_run
         uses: actions/upload-artifact@v4
@@ -62,5 +79,5 @@ jobs:
           git config user.name "nu.a bot"
           git config user.email "bot@nu.a"
           git add data
-          git diff --staged --quiet || git commit -m "chore: log post $(date -u +%Y-%m-%d)"
+          git diff --staged --quiet || git commit -m "chore: log post and stories $(date -u +%Y-%m-%d)"
           git push
