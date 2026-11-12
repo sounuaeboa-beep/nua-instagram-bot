@@ -20,5 +20,31 @@
       "Calcinha sem marca na roupa justa",
       "Kit com 5 por R$ 49,90"
     ]
+  },
+  {
+    "date": "2026-11-12T20:29:36.266185+00:00",
+    "set": "mito",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "pergunta",
+        "media_id": "17974073478193253"
+      },
+      {
+        "frame": "resposta",
+        "media_id": "18164807845500343"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18128793067903036"
+      }
+    ],
+    "photos": [
+      "store:47088409018598"
+    ],
+    "texts": [
+      "Quanto mais peças no kit, menos você paga por calcinha.",
+      "Conforto bom também cabe no bolso"
+    ]
   }
 ]
