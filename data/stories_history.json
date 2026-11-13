@@ -46,5 +46,27 @@
       "Quanto mais peças no kit, menos você paga por calcinha.",
       "Conforto bom também cabe no bolso"
     ]
+  },
+  {
+    "date": "2026-11-13T01:29:55.893905+00:00",
+    "set": "dica",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "17946866253370431"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17901196935397538"
+      }
+    ],
+    "photos": [
+      "lib:sculpt/4 CMF300 - WHITE - SIDE - stretch.jpg"
+    ],
+    "texts": [
+      "Escolha a cor pelo look do dia",
+      "Sua cor, seu dia"
+    ]
   }
 ]
