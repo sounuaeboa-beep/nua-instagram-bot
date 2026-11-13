@@ -68,5 +68,29 @@
       "Escolha a cor pelo look do dia",
       "Sua cor, seu dia"
     ]
+  },
+  {
+    "date": "2026-11-13T20:05:56.914272+00:00",
+    "set": "escolha",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "escolha",
+        "media_id": "18134678158762540"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18080300879436099"
+      }
+    ],
+    "photos": [
+      "store:48132534567142",
+      "lib:essencial/3 CLT100 - BLACK - FRONT - hands waist.jpg",
+      "lib:essencial/8 CLT100 - BEIGE - SIDE - natural.jpg"
+    ],
+    "texts": [
+      "Qual você levaria hoje, 1 ou 2?",
+      "Escolheu? Agora é só vestir."
+    ]
   }
 ]
