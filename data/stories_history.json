@@ -92,5 +92,26 @@
       "Qual você levaria hoje, 1 ou 2?",
       "Escolheu? Agora é só vestir."
     ]
+  },
+  {
+    "date": "2026-11-14T01:03:43.482026+00:00",
+    "set": "novo",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "17913345756303786"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17896094997619730"
+      }
+    ],
+    "photos": [
+      "store:48132533780710"
+    ],
+    "texts": [
+      "Novo no feed: a nu.a Essencial"
+    ]
   }
 ]
