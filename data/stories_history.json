@@ -113,5 +113,27 @@
     "texts": [
       "Novo no feed: a nu.a Essencial"
     ]
+  },
+  {
+    "date": "2026-11-14T18:31:09.076016+00:00",
+    "set": "dica",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18115065623140060"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18118407875273835"
+      }
+    ],
+    "photos": [
+      "store:48132541874406"
+    ],
+    "texts": [
+      "Dica rápida: monte seu kit",
+      "Sua Invisible te espera"
+    ]
   }
 ]
