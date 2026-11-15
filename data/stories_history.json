@@ -135,5 +135,26 @@
       "Dica rápida: monte seu kit",
       "Sua Invisible te espera"
     ]
+  },
+  {
+    "date": "2026-11-15T00:16:39.483712+00:00",
+    "set": "novo",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "18028675325867818"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18214346449325086"
+      }
+    ],
+    "photos": [
+      "lib:sculpt/3 CMF300 - BLACK - FRONT - hands waist.jpg"
+    ],
+    "texts": [
+      "Sculpt: cós alto e microfibra"
+    ]
   }
 ]
