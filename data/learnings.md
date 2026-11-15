@@ -1,6 +1,6 @@
-Resultados dos nossos últimos 11 posts (pontos = curtidas + 2 x comentários):
-- Média por formato: image 2 (4 posts); reel 1 (5 posts); carousel 0 (2 posts)
-- Média por pilar: conforto 2 (4 posts); educacao 1 (3 posts); multipack 1 (3 posts); aspiracional 0 (1 posts)
-- Média por linha: essencial 2 (4 posts); invisible 1 (4 posts); sculpt 1 (3 posts)
+Resultados dos nossos últimos 12 posts (pontos = curtidas + 2 x comentários):
+- Média por formato: image 2 (5 posts); reel 1 (5 posts); carousel 0 (2 posts)
+- Média por pilar: conforto 2 (5 posts); educacao 1 (3 posts); aspiracional 1 (1 posts); multipack 1 (3 posts)
+- Média por linha: essencial 2 (4 posts); invisible 1 (4 posts); sculpt 0 (4 posts)
 - Mais engajados: "Vestiu, esqueceu. Só conforto." (5) | "Vestiu, esqueceu. Só conforto." (4) | "Corte a laser, sem costura" (3)
 Use como pista do que funciona; não é regra e nunca repita os mesmos textos.

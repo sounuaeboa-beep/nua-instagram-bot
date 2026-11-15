@@ -156,5 +156,26 @@
     "texts": [
       "Sculpt: cós alto e microfibra"
     ]
+  },
+  {
+    "date": "2026-11-15T19:08:07.228943+00:00",
+    "set": "kit",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "kit",
+        "media_id": "18189574147423106"
+      },
+      {
+        "frame": "precos",
+        "media_id": "18120645716088715"
+      }
+    ],
+    "photos": [
+      "lib:essencial/4 CLT100 - BLACK - SIDE - stretch.jpg"
+    ],
+    "texts": [
+      "Leve 5 e pague menos em cada"
+    ]
   }
 ]
