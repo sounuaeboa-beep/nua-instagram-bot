@@ -177,5 +177,27 @@
     "texts": [
       "Leve 5 e pague menos em cada"
     ]
+  },
+  {
+    "date": "2026-11-16T00:23:07.776175+00:00",
+    "set": "dica",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18126735187711323"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18093316772295499"
+      }
+    ],
+    "photos": [
+      "lib:invisible/2 CLF200 - WHITE - BACK - holding.jpg"
+    ],
+    "texts": [
+      "Dica rápida: kit de 5 rende mais",
+      "Invisible pesa pouco no bolso"
+    ]
   }
 ]
