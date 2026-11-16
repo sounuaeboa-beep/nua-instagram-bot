@@ -65,8 +65,8 @@ jobs:
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
         run: |
-          python scripts/run_daily.py --dry-run --format image 2>&1 | tee dryrun_image.log
-          python scripts/run_daily.py --dry-run --format reel 2>&1 | tee dryrun_reel.log
+          python scripts/run_daily.py --dry-run --pillar educacao --format image 2>&1 | tee dryrun_image.log
+          python scripts/run_daily.py --dry-run --pillar conforto --format reel 2>&1 | tee dryrun_reel.log
 
       - name: Save test results to the test-results branch
         if: always()
