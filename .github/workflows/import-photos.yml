@@ -1,0 +1,82 @@
+name: Import real photos
+
+# Runs when the import list changes (or by hand). Downloads the listed Drive photos into media/real/,
+# commits them, then does a test build that publishes nothing and saves the result to the `test-results` branch.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/photo_import.json"
+      - ".github/workflows/import-photos.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: daily-post        # never runs at the same time as a scheduled post
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - run: pip install -r requirements.txt
+
+      - name: Download and resize photos
+        run: python scripts/import_photos.py 2>&1 | tee import.log
+
+      - name: Commit photos
+        run: |
+          git config user.name "nu.a bot"
+          git config user.email "bot@nu.a"
+          git add media/real
+          git diff --staged --quiet || git commit -m "Library: real-model photos from the Nov 2026 shoot"
+          git pull --rebase origin main
+          git push origin HEAD:main
+
+      - name: Test renders (one post per line from the real photos, nothing published)
+        run: |
+          python - <<'EOF' 2>&1 | tee render.log
+          import sys
+          sys.path.insert(0, "scripts")
+          import photos, generate_art
+          for product in ["essencial", "invisible", "sculpt"]:
+              for pillar in ["educacao", "conforto"]:
+                  photo = photos._try_pool("real", product, None, set(), set(), pillar)
+                  path = generate_art.render_post(photo.image, "Teste de foto real", product + " / " + pillar,
+                                                  f"test_{product}_{pillar}")
+                  print(pillar, photo.id, "->", path)
+          EOF
+
+      - name: Full dry run (caption + image + Reel, nothing published)
+        continue-on-error: true
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET }}
+        run: |
+          python scripts/run_daily.py --dry-run --format image 2>&1 | tee dryrun_image.log
+          python scripts/run_daily.py --dry-run --format reel 2>&1 | tee dryrun_reel.log
+
+      - name: Save test results to the test-results branch
+        if: always()
+        run: |
+          mkdir -p /tmp/results && cp *.log /tmp/results/ 2>/dev/null || true
+          cp output/*.png output/*.mp4 /tmp/results/ 2>/dev/null || true
+          git checkout --orphan test-results
+          git rm -rf --cached . > /dev/null
+          find . -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+          cp -r /tmp/results/. .
+          git add -A
+          git commit -m "Test results $(date -u +%Y-%m-%dT%H:%MZ)"
+          git push -f origin test-results

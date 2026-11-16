@@ -46,6 +46,10 @@ attached to the run as the `dry-run-image` artifact).
 See `.env.example`. The scheduled run is live; a failed run makes GitHub email you.
 
 ## Changing things
+- **Real-model photos (first choice):** `media/real/essencial|invisible|sculpt/`, about 70% of picks on comfort, education
+  and aspirational days (35% on kit days). Back views are used only on comfort/aspirational days. To add a new shoot, share
+  the Drive files as "anyone with the link", list them in `data/photo_import.json` and push: the "Import real photos"
+  workflow downloads, resizes and commits them, then saves a test build (nothing published) to the `test-results` branch.
 - **Photos:** product close-ups go in `media/essencial|invisible|sculpt/`; people/lifestyle shots in `media/lifestyle/`
   (used on comfort and aspirational days; wide landscape photos are skipped). Posts are 4:5 (1080x1350): photo on top, text strip below.
 - **Voice / strategy:** edit `data/playbook.md` and `scripts/content.py`.

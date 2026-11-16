@@ -12,14 +12,19 @@ MEDIA_DIR = Path(__file__).resolve().parent.parent / "media"
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 STORE_WIDTH = 1600                      # store photos are 2000x2000; this is plenty for a 1080 px post
 
-# pillar -> {pool: weight}. Pools: product close-ups (library), people shots (lifestyle),
-# store photos of the single product / of its kits.
+# pillar -> {pool: weight}. Pools: real-model photos from the Nov 2026 shoot (real, media/real/<product>/),
+# product close-ups (library), people shots (lifestyle), store photos of the single product / of its kits.
+# Real photos come first (closer to Brazilian customers); the older AI images stay as backup and variety.
+# If a pool has nothing usable (e.g. all its photos were used recently) the other pools fill in.
 POOL_WEIGHTS = {
-    "conforto": {"lifestyle": 0.30, "library": 0.35, "store_single": 0.35},
-    "educacao": {"library": 0.45, "store_single": 0.55},
-    "multipack": {"store_kit": 0.65, "library": 0.35},
-    "aspiracional": {"lifestyle": 1.0},
+    "conforto": {"real": 0.70, "lifestyle": 0.10, "library": 0.05, "store_single": 0.15},
+    "educacao": {"real": 0.70, "library": 0.10, "store_single": 0.20},
+    "multipack": {"store_kit": 0.60, "real": 0.35, "library": 0.05},
+    "aspiracional": {"real": 0.70, "lifestyle": 0.30},
 }
+REAL_DIR = MEDIA_DIR / "real"
+# Back views are kept for comfort/aspirational posts; education and kit posts show the front.
+BACK_VIEW_PILLARS = {"conforto", "aspiracional"}
 
 
 @dataclass
@@ -74,7 +79,7 @@ def choose(product: str, pillar: str | None, count: int, avoid: set[str], catalo
         if len(chosen) == count:
             break
         pool = random.choices(list(weights), weights=list(weights.values()))[0]
-        photo = _try_pool(pool, product, catalog_entry, avoid | tried | {p.id for p in chosen}, tried)
+        photo = _try_pool(pool, product, catalog_entry, avoid | tried | {p.id for p in chosen}, tried, pillar)
         if photo:
             chosen.append(photo)
     if len(chosen) < count:  # everything recent was skipped: relax the avoid list rather than fail
@@ -84,7 +89,18 @@ def choose(product: str, pillar: str | None, count: int, avoid: set[str], catalo
     return chosen
 
 
-def _try_pool(pool: str, product: str, entry: dict | None, skip: set[str], tried: set[str]) -> Photo | None:
+def _try_pool(pool: str, product: str, entry: dict | None, skip: set[str], tried: set[str],
+              pillar: str | None = None) -> Photo | None:
+    if pool == "real":
+        folder = REAL_DIR / product
+        options = [p for p in _library_ids(folder) if f"real:{product}/{p.name}" not in skip
+                   and (pillar in BACK_VIEW_PILLARS or " - BACK - " not in p.name)]
+        if not options:
+            return None
+        path = random.choice(options)
+        pid = f"real:{product}/{path.name}"
+        tried.add(pid)
+        return Photo(pid, Image.open(path).convert("RGB"), pool)
     if pool in ("library", "lifestyle"):
         folder = MEDIA_DIR / ("lifestyle" if pool == "lifestyle" else product)
         options = [p for p in _library_ids(folder) if f"lib:{folder.name}/{p.name}" not in skip]
