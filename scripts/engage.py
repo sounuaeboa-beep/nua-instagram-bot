@@ -166,6 +166,12 @@ def write_reply(comment: dict, product: str | None, facts: str, dm_on: bool, key
 
 # ---------- main ----------
 
+def _set_status(state: dict, value: str, now: datetime) -> None:
+    """Saved only when it changes, so the state file (and the repo) is not rewritten every 20 minutes."""
+    if state.get("status", {}).get("value") != value:
+        state["status"] = {"value": value, "since": now.isoformat()}
+
+
 def run(dry_run: bool) -> int:
     cfg = settings()
     if not cfg["auto_reply"] and not cfg["comment_to_dm"]:
@@ -220,6 +226,10 @@ def run(dry_run: bool) -> int:
                     continue
                 handled[cid] = record
                 time.sleep(2)   # gentle pace: replies look natural and stay far from rate limits
+        _set_status(state, "ok", now)
+    except MissingPermission:
+        _set_status(state, "missing_permission", now)
+        raise
     finally:
         if not dry_run:
             STATE_PATH.write_text(json.dumps(state, ensure_ascii=False, indent=1), encoding="utf-8")
