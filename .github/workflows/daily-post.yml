@@ -79,5 +79,8 @@ jobs:
           git config user.name "nu.a bot"
           git config user.email "bot@nu.a"
           git add data
-          git diff --staged --quiet || git commit -m "chore: log post and stories $(date -u +%Y-%m-%d)"
-          git push
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: log post and stories $(date -u +%Y-%m-%d)"
+          # the comment-reply job also saves to main: rebase onto it and retry instead of failing
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push && exit 0; sleep $((i * 5)); done
+          exit 1

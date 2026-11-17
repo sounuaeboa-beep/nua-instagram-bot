@@ -1,0 +1,57 @@
+name: Reply to comments
+
+# Every ~20 minutes (GitHub may start scheduled runs late): auto-replies to new comments and sends the product link by
+# private message to anyone who comments the keyword (QUERO). Switches: data/settings.json.
+# When a comment needs a person (complaint, order problem, a reply the reviewer blocked), the last step fails on
+# purpose so GitHub emails you; the run log lists the comments under "NEEDS A HUMAN".
+on:
+  schedule:
+    - cron: "*/20 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run (decide and print, post nothing)"
+        type: boolean
+        default: true
+
+concurrency:
+  group: engage            # separate from the daily post, which must never be cancelled by these frequent runs
+
+jobs:
+  engage:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - run: pip install -r requirements.txt
+
+      - name: Reply to new comments
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          IG_ACCESS_TOKEN: ${{ secrets.IG_ACCESS_TOKEN }}
+          IG_USER_ID: ${{ secrets.IG_USER_ID }}
+        run: python scripts/engage.py ${{ inputs.dry_run && '--dry-run' || '' }}
+
+      - name: Save which comments were handled
+        if: always() && !inputs.dry_run
+        run: |
+          git config user.name "nu.a bot"
+          git config user.email "bot@nu.a"
+          git add data/engagement.json 2>/dev/null || exit 0
+          git diff --staged --quiet && exit 0
+          git commit -m "chore: comments handled $(date -u +%Y-%m-%dT%H:%MZ)"
+          for i in 1 2 3 4 5; do git pull --rebase origin main && git push && exit 0; sleep $((i * 5)); done
+          exit 1
+
+      - name: Comments need a human reply (see "NEEDS A HUMAN" in the step above)
+        if: always()
+        run: |
+          if [ -f output/engagement_alerts.txt ]; then cat output/engagement_alerts.txt; exit 1; fi

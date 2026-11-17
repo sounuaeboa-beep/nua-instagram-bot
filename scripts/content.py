@@ -135,6 +135,21 @@ def _slides_ok(post: dict) -> bool:
             and all(isinstance(x, dict) and x.get("title") and x.get("body") for x in slides))
 
 
+SETTINGS_PATH = Path(__file__).resolve().parent.parent / "data" / "settings.json"
+QUERO_PILLARS = {"conforto", "educacao", "multipack"}
+
+
+def _quero_cta(pillar: str) -> str:
+    """When "Comente QUERO" is switched on, the caption ends by inviting that comment (the bot then sends the link
+    by private message). Kept off until the Instagram token has the comments permission."""
+    cfg = json.loads(SETTINGS_PATH.read_text(encoding="utf-8")) if SETTINGS_PATH.exists() else {}
+    if not (cfg.get("caption_cta_quero") and cfg.get("comment_to_dm", True)) or pillar not in QUERO_PILLARS:
+        return ""
+    word = cfg.get("dm_keyword", "QUERO")
+    return (f"CTA DE HOJE: termine a legenda convidando a comentar {word} para receber o link no direct "
+            f"(ex.: \"Comenta {word} que eu te mando o link no direct 💌\"). Mantenha também \"link na bio\".\n")
+
+
 def create_post(pillar: str, product: str, facts: str, recent_hooks: list[str],
                 recent_headlines: list[str] = (), fmt: str = "image") -> dict:
     """Generate, then have a second call review it. Up to 3 attempts: a reviewer rejection, a headline that repeats a
@@ -148,7 +163,7 @@ def create_post(pillar: str, product: str, facts: str, recent_hooks: list[str],
             f"PILAR DE HOJE: {pillar} — {PILLARS[pillar]}\nLINHA: {product}\nFORMATO: {FORMAT_BRIEFS[fmt]}\n\n"
             f"FATOS:\n{facts}\n\nGanchos recentes (não repita): {recent_hooks or 'nenhum'}\n"
             f"Textos de imagem recentes (não repita nem parafraseie): {list(recent_headlines) or 'nenhum'}\n{feedback}\n"
-            "Gere UMA publicação pronta para postar hoje."
+            f"{_quero_cta(pillar)}Gere UMA publicação pronta para postar hoje."
         )
         post = _ask(_system_prompt(), user, max_tokens=6000)
 

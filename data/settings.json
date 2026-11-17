@@ -1,0 +1,7 @@
+{
+  "_help": "Switches for scripts/engage.py and the captions. true = on, false = off. Edit on GitHub and commit.",
+  "auto_reply": true,
+  "comment_to_dm": true,
+  "dm_keyword": "QUERO",
+  "caption_cta_quero": false
+}

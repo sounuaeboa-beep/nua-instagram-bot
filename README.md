@@ -30,6 +30,21 @@ and the call to action is "link na bio".
 
 Any Reel or carousel problem falls back to a normal image post, so the day's post is never lost.
 
+Comments ("Reply to comments" workflow, every ~20 minutes):
+```
+  -> engage.py  new comments on the last 12 posts (max 7 days old), each handled once (data/engagement.json)
+                - keyword QUERO: private message with the product + kit links and prices from the store feed (no AI),
+                  plus a short public "te mandei no direct"
+                - anything else: Claude replies (questions, compliments), replies AND flags for a human (complaints,
+                  orders, delivery, anything the store facts do not answer), or ignores (spam); a second call reviews
+                  every reply and blocks invented facts
+                - flagged comments make the run's last step fail on purpose, so GitHub emails you
+```
+Switches in `data/settings.json`: `auto_reply`, `comment_to_dm`, `dm_keyword`, and `caption_cta_quero` (captions on
+comfort/education/kit days end with "Comenta QUERO..."; keep it off until the token has the comments permission).
+Needs the Instagram permissions `instagram_business_manage_comments` and `instagram_business_manage_messages`:
+re-authorize once with `python scripts/ig_authorize.py` (on your computer) and update the `IG_ACCESS_TOKEN` secret.
+
 ## Run it
 
 ```bash
