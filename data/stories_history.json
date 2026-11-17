@@ -225,5 +225,26 @@
       "Quanto mais calcinhas no kit, menos você paga por peça.",
       "Monte seu kit Sculpt"
     ]
+  },
+  {
+    "date": "2026-11-17T03:10:01.269939+00:00",
+    "set": "novo",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "18070113677527031"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18100146938690719"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - SKIN - BACK - M1-2.jpg"
+    ],
+    "texts": [
+      "Viu no feed? Ela é sua."
+    ]
   }
 ]
