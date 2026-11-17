@@ -246,5 +246,29 @@
     "texts": [
       "Viu no feed? Ela é sua."
     ]
+  },
+  {
+    "date": "2026-11-17T21:22:34.133673+00:00",
+    "set": "escolha",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "escolha",
+        "media_id": "17961689115012198"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17911987743577745"
+      }
+    ],
+    "photos": [
+      "real:invisible/CLF200 - BLACK - FRONT - M1.jpg",
+      "lib:invisible/4 CLF200 - RED - SIDE - stretch.jpg.jpg",
+      "store:48132542234854"
+    ],
+    "texts": [
+      "Qual combina mais com seu dia?",
+      "Boa escolha, o dia é seu"
+    ]
   }
 ]
