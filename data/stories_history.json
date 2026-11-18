@@ -291,5 +291,27 @@
     "texts": [
       "Novo no feed: nu.a Sculpt"
     ]
+  },
+  {
+    "date": "2026-11-18T20:56:20.224908+00:00",
+    "set": "dica",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18576284992075995"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17916469206472168"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - SKIN - BACK - M3.jpg"
+    ],
+    "texts": [
+      "Dica rápida: vista sem marcas",
+      "Sem marca, só conforto"
+    ]
   }
 ]
