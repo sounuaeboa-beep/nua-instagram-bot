@@ -270,5 +270,26 @@
       "Qual combina mais com seu dia?",
       "Boa escolha, o dia é seu"
     ]
+  },
+  {
+    "date": "2026-11-18T02:37:19.988115+00:00",
+    "set": "novo",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "17904950529374230"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18342161200279102"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - SKIN - FRONT - M3.jpg"
+    ],
+    "texts": [
+      "Novo no feed: nu.a Sculpt"
+    ]
   }
 ]
