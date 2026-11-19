@@ -313,5 +313,27 @@
       "Dica rápida: vista sem marcas",
       "Sem marca, só conforto"
     ]
+  },
+  {
+    "date": "2026-11-19T02:01:19.961246+00:00",
+    "set": "dica",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "17913687408590236"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18122669638993162"
+      }
+    ],
+    "photos": [
+      "lib:invisible/1 CLF200 - RED - FRONT - Holding.jpg"
+    ],
+    "texts": [
+      "Dica rápida: Invisible no dia a dia",
+      "Escolha as suas no link"
+    ]
   }
 ]
