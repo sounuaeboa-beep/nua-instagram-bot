@@ -335,5 +335,26 @@
       "Dica rápida: Invisible no dia a dia",
       "Escolha as suas no link"
     ]
+  },
+  {
+    "date": "2026-11-19T20:59:47.842520+00:00",
+    "set": "kit",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "kit",
+        "media_id": "18100290770118365"
+      },
+      {
+        "frame": "precos",
+        "media_id": "18141012964726587"
+      }
+    ],
+    "photos": [
+      "store:47088411181286"
+    ],
+    "texts": [
+      "Cada peça sai por menos"
+    ]
   }
 ]
