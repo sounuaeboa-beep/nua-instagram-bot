@@ -356,5 +356,26 @@
     "texts": [
       "Cada peça sai por menos"
     ]
+  },
+  {
+    "date": "2026-11-20T01:55:18.612554+00:00",
+    "set": "novo",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "18650521756052781"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17980571378931517"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - SKIN - FRONT - M1.jpg"
+    ],
+    "texts": [
+      "Corte a laser, zero costura aparente"
+    ]
   }
 ]
