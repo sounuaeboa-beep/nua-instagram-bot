@@ -377,5 +377,31 @@
     "texts": [
       "Corte a laser, zero costura aparente"
     ]
+  },
+  {
+    "date": "2026-11-20T20:46:03.207595+00:00",
+    "set": "mito",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "pergunta",
+        "media_id": "18366743557247809"
+      },
+      {
+        "frame": "resposta",
+        "media_id": "18078098192775974"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18005347559807006"
+      }
+    ],
+    "photos": [
+      "real:invisible/CLF200 - RED - FRONT - M3.jpg"
+    ],
+    "texts": [
+      "Kit com 5 calcinhas sai mais barato por peça do que comprar uma só.",
+      "Seu kit, sua conta"
+    ]
   }
 ]
