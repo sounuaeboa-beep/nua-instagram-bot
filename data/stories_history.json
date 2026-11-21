@@ -403,5 +403,26 @@
       "Kit com 5 calcinhas sai mais barato por peça do que comprar uma só.",
       "Seu kit, sua conta"
     ]
+  },
+  {
+    "date": "2026-11-21T01:45:06.036126+00:00",
+    "set": "novo",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "17922858858463925"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18145861078721655"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - GREEN - FRONT - M1.jpg"
+    ],
+    "texts": [
+      "Chegou a nu.a Sculpt"
+    ]
   }
 ]
