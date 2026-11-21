@@ -424,5 +424,29 @@
     "texts": [
       "Chegou a nu.a Sculpt"
     ]
+  },
+  {
+    "date": "2026-11-21T19:49:01.588244+00:00",
+    "set": "escolha",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "escolha",
+        "media_id": "18140180992655331"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18023510510950557"
+      }
+    ],
+    "photos": [
+      "store:49382399869158",
+      "lib:essencial/3 CLT100 - BLACK - FRONT - hands waist.jpg",
+      "lib:lifestyle/shoot-2-5.jpg"
+    ],
+    "texts": [
+      "Qual você levaria hoje: 1 ou 2?",
+      "Boa escolha, conforto é isso"
+    ]
   }
 ]
