@@ -448,5 +448,26 @@
       "Qual você levaria hoje: 1 ou 2?",
       "Boa escolha, conforto é isso"
     ]
+  },
+  {
+    "date": "2026-11-22T00:41:23.073513+00:00",
+    "set": "novo",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "18114035987627266"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18118916492028099"
+      }
+    ],
+    "photos": [
+      "lib:lifestyle/shoot-2-3.jpg"
+    ],
+    "texts": [
+      "Novo no feed: nu.a Invisible"
+    ]
   }
 ]
