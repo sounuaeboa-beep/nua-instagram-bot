@@ -469,5 +469,27 @@
     "texts": [
       "Novo no feed: nu.a Invisible"
     ]
+  },
+  {
+    "date": "2026-11-22T19:59:45.352462+00:00",
+    "set": "dica",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18400842652203356"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18036225221676769"
+      }
+    ],
+    "photos": [
+      "store:48132545052902"
+    ],
+    "texts": [
+      "Dica rápida: fio dental pro dia a dia",
+      "Escolha a sua cor"
+    ]
   }
 ]
