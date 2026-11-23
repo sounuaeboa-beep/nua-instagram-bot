@@ -491,5 +491,27 @@
       "Dica rápida: fio dental pro dia a dia",
       "Escolha a sua cor"
     ]
+  },
+  {
+    "date": "2026-11-23T01:09:22.237172+00:00",
+    "set": "dica",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18136571321501395"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18161769436445199"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - CAQUI - BACK - M1.jpg"
+    ],
+    "texts": [
+      "Dica rápida: forro 100% algodão",
+      "Respire fundo, tá tudo confortável"
+    ]
   }
 ]
