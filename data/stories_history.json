@@ -551,5 +551,31 @@
     "texts": [
       "Sculpt: cós alto, conforto total"
     ]
+  },
+  {
+    "date": "2026-11-24T22:48:06.855475+00:00",
+    "set": "mito",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "pergunta",
+        "media_id": "18364883956221995"
+      },
+      {
+        "frame": "resposta",
+        "media_id": "17947013127384060"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18138606043738130"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - BLACK - FRONT - M1.jpg"
+    ],
+    "texts": [
+      "Calcinha sem costura aparente não deixa marca embaixo de roupa justa.",
+      "Vista justa, sem marca"
+    ]
   }
 ]
