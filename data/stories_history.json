@@ -513,5 +513,26 @@
       "Dica rápida: forro 100% algodão",
       "Respire fundo, tá tudo confortável"
     ]
+  },
+  {
+    "date": "2026-11-24T00:23:38.159094+00:00",
+    "set": "kit",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "kit",
+        "media_id": "18128237843007237"
+      },
+      {
+        "frame": "precos",
+        "media_id": "18112532144223994"
+      }
+    ],
+    "photos": [
+      "store:49137725898982"
+    ],
+    "texts": [
+      "Leve 5 e pague menos"
+    ]
   }
 ]
