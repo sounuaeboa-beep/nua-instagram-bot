@@ -534,5 +534,22 @@
     "texts": [
       "Leve 5 e pague menos"
     ]
+  },
+  {
+    "date": "2026-11-24T05:00:01.654558+00:00",
+    "set": "novo",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "produto",
+        "media_id": "17915467227565446"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - SKIN - FRONT - M3-2.jpg"
+    ],
+    "texts": [
+      "Sculpt: cós alto, conforto total"
+    ]
   }
 ]
