@@ -599,5 +599,29 @@
       "Dica rápida: monte seu kit de cores",
       "Seu kit, do seu jeito"
     ]
+  },
+  {
+    "date": "2026-11-25T22:00:14.272494+00:00",
+    "set": "escolha",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "escolha",
+        "media_id": "18126499807944754"
+      },
+      {
+        "frame": "produto",
+        "media_id": "17900279505410173"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - SKIN - FRONT - M3.jpg",
+      "store:48132544561382",
+      "lib:lifestyle/shoot-2-4.jpg"
+    ],
+    "texts": [
+      "Qual combina mais com seu dia: 1 ou 2?",
+      "Boa escolha, hein?"
+    ]
   }
 ]
