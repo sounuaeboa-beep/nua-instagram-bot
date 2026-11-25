@@ -577,5 +577,27 @@
       "Calcinha sem costura aparente não deixa marca embaixo de roupa justa.",
       "Vista justa, sem marca"
     ]
+  },
+  {
+    "date": "2026-11-25T03:44:44.685727+00:00",
+    "set": "dica",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "18134425597839257"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18123069146076365"
+      }
+    ],
+    "photos": [
+      "real:invisible/CLF200 - BLACK - BACK - M1.jpg"
+    ],
+    "texts": [
+      "Dica rápida: monte seu kit de cores",
+      "Seu kit, do seu jeito"
+    ]
   }
 ]
