@@ -644,5 +644,27 @@
     "texts": [
       "Já tá no feed, vem ver"
     ]
+  },
+  {
+    "date": "2026-11-26T21:57:17.757616+00:00",
+    "set": "dica",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "dica",
+        "media_id": "17887032711628922"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18155473726530352"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - CAQUI - BACK - M1-2.jpg"
+    ],
+    "texts": [
+      "Dica rápida: corte a laser",
+      "Nu.a Essencial tanga"
+    ]
   }
 ]
