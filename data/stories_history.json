@@ -623,5 +623,26 @@
       "Qual combina mais com seu dia: 1 ou 2?",
       "Boa escolha, hein?"
     ]
+  },
+  {
+    "date": "2026-11-26T03:07:31.296226+00:00",
+    "set": "novo",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "17982380246915513"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18198027100400426"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - WHITE - FRONT - M1.jpg"
+    ],
+    "texts": [
+      "Já tá no feed, vem ver"
+    ]
   }
 ]
