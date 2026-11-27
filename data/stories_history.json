@@ -687,5 +687,22 @@
     "texts": [
       "Leve, fácil e do seu jeito"
     ]
+  },
+  {
+    "date": "2026-11-27T21:40:26.221321+00:00",
+    "set": "kit",
+    "product": "sculpt",
+    "frames": [
+      {
+        "frame": "precos",
+        "media_id": "18038236559669797"
+      }
+    ],
+    "photos": [
+      "real:sculpt/CMF300 - GREEN - FRONT - M1.jpg"
+    ],
+    "texts": [
+      "Kit com 5 sai mais em conta"
+    ]
   }
 ]
