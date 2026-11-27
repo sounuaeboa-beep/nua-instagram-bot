@@ -666,5 +666,26 @@
       "Dica rápida: corte a laser",
       "Nu.a Essencial tanga"
     ]
+  },
+  {
+    "date": "2026-11-27T03:17:26.122979+00:00",
+    "set": "novo",
+    "product": "invisible",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "18144120469724658"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18114769997174083"
+      }
+    ],
+    "photos": [
+      "real:invisible/CLF200 - SKIN - BACK - M2-2.jpg"
+    ],
+    "texts": [
+      "Leve, fácil e do seu jeito"
+    ]
   }
 ]
