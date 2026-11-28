@@ -704,5 +704,26 @@
     "texts": [
       "Kit com 5 sai mais em conta"
     ]
+  },
+  {
+    "date": "2026-11-28T02:58:16.415440+00:00",
+    "set": "novo",
+    "product": "essencial",
+    "frames": [
+      {
+        "frame": "novo",
+        "media_id": "17914434681306777"
+      },
+      {
+        "frame": "produto",
+        "media_id": "18156986512535284"
+      }
+    ],
+    "photos": [
+      "real:essencial/CLT100 - CAQUI - BACK - M3.jpg"
+    ],
+    "texts": [
+      "Chegou a Essencial, olha só"
+    ]
   }
 ]
